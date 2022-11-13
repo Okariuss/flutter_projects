@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
               builder: (context, resultModelNesne, child) {
                 return GestureDetector(
                   onTap: () {
-                    double h = double.parse(_heightController.text);
+                    double h = double.parse(_heightController.text) / 100;
                     double w = double.parse(_widthController.text);
                     resultModelNesne.calculateResult(h, w);
                     resultModelNesne.textResult(resultModelNesne.getResult());
