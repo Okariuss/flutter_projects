@@ -1,23 +1,22 @@
 import 'package:bmi_calculator/constants/app_constants.dart';
+import 'package:bmi_calculator/providers/calculate_bmi_provider.dart';
 import 'package:bmi_calculator/widgets/left_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/right_bar.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  TextEditingController _heightController = TextEditingController();
-  TextEditingController _widthController = TextEditingController();
+  final TextEditingController _heightController = TextEditingController();
+  final TextEditingController _widthController = TextEditingController();
 
-  double _bmiResult = 0;
-  String _textResult = "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Row(
@@ -44,87 +43,84 @@ class _HomeScreenState extends State<HomeScreen> {
                 inputText(_widthController, "Mass"),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
-            GestureDetector(
-              onTap: () {
-                double _h = double.parse(_heightController.text);
-                double _w = double.parse(_widthController.text);
-                setState(() {
-                  _bmiResult = _w / (_h * _h);
-
-                  if (_bmiResult > 25)
-                    _textResult = "You\'re over weight";
-                  else if (_bmiResult > 18.5)
-                    _textResult = "You\'re normal weight";
-                  else
-                    _textResult = "You\'re under weight";
-                });
-              },
-              child: Container(
+            Consumer<CalculateBMIProvider>(
+              builder: (context, resultModelNesne, child) {
+                return GestureDetector(
+                  onTap: () {
+                    double h = double.parse(_heightController.text);
+                    double w = double.parse(_widthController.text);
+                    resultModelNesne.calculateResult(h, w);
+                    resultModelNesne.textResult(resultModelNesne.getResult());
+                  },
                   child: Text(
-                "Calculate",
-                style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: accentHexColor),
-              )),
+                    "Calculate",
+                    style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: accentHexColor),
+                  ),
+                );
+              },
             ),
-            SizedBox(
+            const SizedBox(
               height: 50,
             ),
-            Container(
-              child: Text(
-                _bmiResult.toStringAsFixed(2),
-                style: TextStyle(fontSize: 90, color: accentHexColor),
-              ),
+            Consumer<CalculateBMIProvider>(
+              builder: (context, resultModelNesne, child) {
+                return Text(resultModelNesne.getResult().toStringAsFixed(2),
+                    style: TextStyle(fontSize: 90, color: accentHexColor));
+              },
             ),
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
-            Visibility(
-              visible: _textResult.isNotEmpty,
-              child: Container(
-                child: Text(
-                  _textResult,
-                  style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w400,
-                      color: accentHexColor),
-                ),
-              ),
+            Consumer<CalculateBMIProvider>(
+              builder: (context, resultModelNesne, child) {
+                return Visibility(
+                  visible: resultModelNesne.getTextResult().isNotEmpty,
+                  child: Text(
+                    resultModelNesne.getTextResult(),
+                    style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w400,
+                        color: accentHexColor),
+                  ),
+                );
+              },
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
-            LeftBar(barWidth: 40),
-            SizedBox(
+            const LeftBar(barWidth: 40),
+            const SizedBox(
               height: 20,
             ),
-            LeftBar(barWidth: 70),
-            SizedBox(
+            const LeftBar(barWidth: 70),
+            const SizedBox(
               height: 20,
             ),
-            LeftBar(
+            const LeftBar(
               barWidth: 40,
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
-            RightBar(barWidth: 70),
-            SizedBox(
+            const RightBar(barWidth: 70),
+            const SizedBox(
               height: 50,
             ),
-            RightBar(barWidth: 70),
+            const RightBar(barWidth: 70),
           ],
         ),
       ),
     );
   }
 
-  Container inputText(TextEditingController controller, String name) {
-    return Container(
+  SizedBox inputText(TextEditingController controller, String name) {
+    return SizedBox(
       width: 130,
       child: TextField(
         controller: controller,
